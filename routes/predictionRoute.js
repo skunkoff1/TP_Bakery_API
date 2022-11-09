@@ -4,15 +4,13 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getStats,
     getMonthPrediction,
     getDayPrediction,
     useTensor,
-} = require("../controllers/bakeryControllers.js");
+} = require("../controllers/predictionController.js");
 
-router.post("/stats", getStats);
 router.post("/monthPrediction", getMonthPrediction);
 router.post("/dayPrediction", getDayPrediction);
-router.get("/tensor", useTensor)
+router.get("/tensor", useTensor);
 
 module.exports = router;

@@ -1,140 +1,26 @@
 const fs = require('fs');
 const brain = require("brain.js");
 
-const getStats = (req, res) => {
-
-    let day = req.body.day;
-    let year = req.body.year;
-    let product = req.body.product;
-    let place = req.body.place;
-
-    let data;
-    let sum = 0;
-    let mean = 0;
-    let nbOfDay = 0;
-    let dayMax = "";
-    let max = 0;
-    let dataNumber = [];
-    let dataDate = [];
-    let total = 0;
-
-    try {
-        data = JSON.parse(fs.readFileSync('./Bakery.json', 'utf8'));
-    } catch (err) {
-        console.error(err);
-    }
-
-    if(product != "tous") {
-        for (const elmt of data) {
-            sum = 0;
-            let y = elmt.datetime.substring(0, 4);
-    
-            if (year == "all") {
-                if (elmt.day_of_week == day && elmt.place == place) {
-                    for (const key of Object.keys(elmt)) {
-                        if (key == product) {
-                            nbOfDay += 1;
-                            dataNumber.push(elmt[key]);
-                            dataDate.push(elmt.datetime);
-                            if (elmt[key] != "") {
-                                sum += parseInt(elmt[key]);
-                                if (parseInt(elmt[key]) > max) {
-                                    max = parseInt(elmt[key]);
-                                    dayMax = elmt.datetime;
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (elmt.day_of_week == day && elmt.place == place && y == year) {
-                    for (const key of Object.keys(elmt)) {
-                        if (key == product) {
-                            nbOfDay += 1;
-                            dataNumber.push(elmt[key]);
-                            dataDate.push(elmt.datetime);
-                            if (elmt[key] != "") {
-                                sum += parseInt(elmt[key]);
-                                if (parseInt(elmt[key]) > max) {
-                                    max = parseInt(elmt[key]);
-                                    dayMax = elmt.datetime;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            total += sum;
-        }
-        mean = total / nbOfDay;
-
-        return res.status(200).json({ "mean": mean, "nbOfDay": nbOfDay, "dayMax": dayMax, "max": max, "number": dataNumber, "date": dataDate });
-    }
-    else {
-        for (const elmt of data) {
-            sum = 0;
-            let y = elmt.datetime.substring(0, 4);
-    
-            if (year == "all") {
-                if (elmt.day_of_week == day && elmt.place == place) {
-                    nbOfDay += 1;
-                    sum = 0;
-                    for (const key of Object.keys(elmt)) {
-                        if (elmt[key] != "" && key != "datetime" && key != "day_of_week" && key != "total" && key != "place") {
-                            sum += parseInt(elmt[key])                           
-                        }
-                    }                    
-                    dataNumber.push(sum);
-                    dataDate.push(elmt.datetime); 
-                    if(sum > max) {
-                        max = sum;
-                        dayMax = elmt.datetime;
-                    }
-                }
-            } else {
-                if (elmt.day_of_week == day && elmt.place == place && y == year) {
-                    nbOfDay += 1;
-                    sum = 0;
-                    for (const key of Object.keys(elmt)) {
-                        if (elmt[key] != "" && key != "datetime" && key != "day_of_week" && key != "total" && key != "place") {
-                            sum += parseInt(elmt[key])                           
-                        }
-                    }                    
-                    dataNumber.push(sum);
-                    dataDate.push(elmt.datetime); 
-                    if(sum > max) {
-                        max = sum;
-                        dayMax = elmt.datetime;
-                    }
-                }
-            }
-            total += sum;
-        }
-        mean = total / nbOfDay;
-        return res.status(200).json({ "mean": mean, "nbOfDay": nbOfDay, "dayMax": dayMax, "max": max, "number": dataNumber, "date": dataDate });
-    }
-
-}
+/*==================================================================================*/
+/*============================= PREDICTION AU MOIS =================================*/
+/*==================================================================================*/
 
 const getMonthPrediction = async(req, res) => {
 
+    // Récupération des parametres de la requête
     let month = req.body.month;
     let product = req.body.product;
     let place = req.body.place;
 
-    let data;
     let sum = 0;
     let mean = 0;
     let nbOfMonth = 0;
     let currentYear = "";
     let trainingData = [];
 
-    try {
-        data = JSON.parse(fs.readFileSync('./Bakery.json', 'utf8'));
-    } catch (err) {
-        console.error(err);
-    }
+    let data = readFile();
 
+    // POUR TOUS LES PRODUITS
     if(product != "tous") {
         for (const elmt of data) {
             let m = elmt.datetime.substring(5, 7);
@@ -165,6 +51,7 @@ const getMonthPrediction = async(req, res) => {
         return res.status(200).json({ "mean": mean, "nbOfMonth": nbOfMonth, "result": result });
     }
     else {
+        // POUR UN PRODUIT DONNEE
         for (const elmt of data) {
             let m = elmt.datetime.substring(5, 7);
             let y = elmt.datetime.substring(0, 4);
@@ -185,8 +72,7 @@ const getMonthPrediction = async(req, res) => {
                 console.log(sum);
                 trainingData.push([1, sum])  
             }
-        }    
-        
+        }            
     
         const result = await calculateDayPrediction(trainingData);
     
@@ -195,25 +81,25 @@ const getMonthPrediction = async(req, res) => {
 
 }
 
+/*==================================================================================*/
+/*============================= PREDICTION AU JOUR =================================*/
+/*==================================================================================*/
 
 const getDayPrediction = async(req, res) => {
 
+    // Récupération des parametres de la requête
     let day = req.body.day;
     let product = req.body.product;
     let place = req.body.place;
 
-    let data;
     let sum = 0;
     let mean = 0;
     let nbOfDay = 0;
     let trainingData = [];
     
-    try {
-        data = JSON.parse(fs.readFileSync('./Bakery.json', 'utf8'));
-    } catch (err) {
-        console.error(err);
-    }
+    let data = readFile();
 
+    // POUR TOUS LES PRODUITS
     if(product != "tous") {
     
         for (const elmt of data) {
@@ -236,6 +122,7 @@ const getDayPrediction = async(req, res) => {
         return res.status(200).json({ "mean": mean, "nbOfDay": nbOfDay, "result": result });
     }
     else {
+        // POUR UN PRODUIT DONNEE
         for (const elmt of data) {
             if (elmt.place == place && elmt.day_of_week == day) {
                 nbOfDay += 1;
@@ -255,6 +142,8 @@ const getDayPrediction = async(req, res) => {
 
 }
 
+
+// FONCTION QUI APPELLE L'ENTRAINEMENT DE L'IA AVEC ITERATION MAX
 async function calculatePrediction(data) {
     const net = new brain.recurrent.LSTMTimeStep({
         inputSize: 1,
@@ -269,7 +158,7 @@ async function calculatePrediction(data) {
     return result
 }
 
-
+// FONCTION QUI APPELLE L'ENTRAINEMENT DE L'IA AVEC ITERATION MIN
 async function calculateDayPrediction(data) {
     const net = new brain.recurrent.LSTMTimeStep({
         inputSize: 1,
@@ -287,16 +176,10 @@ async function calculateDayPrediction(data) {
     return result
 }
 
-
+// FONCTION POUR LA PAGE UTILISANT TENSORFLOW
 const useTensor = (req, res) => {
 
-      let data;
-
-    try {
-        data = JSON.parse(fs.readFileSync('./Bakery.json', 'utf8'));
-    } catch (err) {
-        console.error(err);
-    }
+    let data = readFile();
 
     let dataMag1 = [];
 
@@ -318,10 +201,21 @@ const useTensor = (req, res) => {
         else {
             elmt.angbutter = parseInt(elmt.angbutter)
         }
-    }        
+    }      
     
     return res.status(200).json({"data": dataCleaned})
     
 }
 
-module.exports = { getStats, getMonthPrediction, getDayPrediction, useTensor };
+// FONCTION QUI PARSE LES DONNEES
+function readFile() {
+    let data;
+    try {
+        data = JSON.parse(fs.readFileSync('./Bakery.json', 'utf8'));
+    } catch (err) {
+        console.error(err);
+    }
+    return data;
+}
+
+module.exports = { getMonthPrediction, getDayPrediction, useTensor };
