@@ -2,6 +2,8 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require('./swagger.json');
 
 // ROUTES
 const prediction_routes = require("./routes/predictionRoute");
@@ -11,6 +13,7 @@ app.use(cors()); //Utilisation de Cors
 app.use(express.json()); //Utilisation du parser JSON d'Express
 
 // Utilisation des routes
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use("/", prediction_routes);
 app.use("/", stats_routes);
 

@@ -1,0 +1,239 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Documentation de l'API Bakery",
+    "description": "Une API conçue pour faire des statistiques, et des predictions de ventes pour une chaîne de boulangerie coréenne"
+  },
+  "host": "https://api.bakery.dd-web.fr",
+  "basePath": "/",
+  "tags": [],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/stats": {
+      "post": {
+        "tags": [
+          "Statistiques de vente"
+        ],
+        "description": "Permets de faire les statistiques de vente d'un magasin donnée, pour un jour de la semaine",
+        "parameters": [
+          {
+            "name": "données",
+            "description": "données à envoyer",
+            "required": true,
+            "in": "body",
+            "schema" : {
+              "type": "object",
+              "properties": 
+              { 
+              "day" : 
+              {
+                "example" : "Mon",
+                "description": "jour de la semaine au format ('Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun')",
+                "required": true,
+                "in": "body",
+                "type": "string"
+              }, 
+              "year" : 
+              {
+                "example" : "2019",
+                "description": "Année (options: 2019,2020,'all')",
+                "required": true,
+                "in": "body",
+                "type": "string"
+              },   
+                "product" : 
+                {
+                  "example" : "angbutter",
+                  "description": "Le produit (options: 'tous', ou le nom du produit)",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                
+                "place" :
+                {
+                  "example" : "mag1",
+                  "description": "Le magasin choisi",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                }
+              }
+            }
+          }          
+        ],
+        "responses": {
+          "200": {
+            "description": "envoi des données réussies"
+          },
+          "400": {
+            "description": "Mauvaise Requête"
+          }
+        }
+      }
+    },
+    "/getTotal": {
+      "post": {
+        "tags": [
+          "Statistiques de vente"
+        ],
+        "description": "Permets de faire les statistiques de vente d'un magasin donnée sur la totalité des données pour un produit ou tous",
+        "parameters": [
+          {
+            "name": "données",
+            "description": "données à envoyer",
+            "required": true,
+            "in": "body",
+            "schema" : {
+              "type": "object",
+              "properties": 
+              {               
+                "product" : 
+                {
+                  "example" : "angbutter",
+                  "description": "Le produit (options: 'tous', ou le nom du produit)",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                
+                "place" :
+                {
+                  "example" : "mag1",
+                  "description": "Le magasin choisi",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                }
+              }
+            }
+          }          
+        ],
+        "responses": {
+          "200": {
+            "description": "envoi des données réussies"
+          },
+          "400": {
+            "description": "Mauvaise Requête"
+          }
+        }
+      }
+    },
+    "/monthPrediction": {
+      "post": {
+        "tags": [
+          "Prédiction de ventes"
+        ],
+        "description": "Permets de faire une prédiction de vente pour un mois donné",
+        "parameters": [
+          {
+            "name": "données",
+            "description": "données à envoyer",
+            "required": true,
+            "in": "body",
+            "schema" : {
+              "type": "object",
+              "properties": 
+              { 
+                "month" : 
+                {
+                  "example" : "01",
+                  "description": "jour de la semaine au format ('Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun')",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                 
+                "product" : 
+                {
+                  "example" : "angbutter",
+                  "description": "Le produit (options: 'tous', ou le nom du produit)",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                
+                "place" :
+                {
+                  "example" : "mag1",
+                  "description": "Le magasin choisi",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                }
+              }
+            }
+          }          
+        ],
+        "responses": {
+          "200": {
+            "description": "envoi des données réussies"
+          },
+          "400": {
+            "description": "Mauvaise Requête"
+          }
+        }
+      }
+    },
+    "/dayPrediction": {
+      "post": {
+        "tags": [
+          "Prédiction de ventes"
+        ],
+        "description": "Permets de faire une prédiction de vente pour un jour donné",
+        "parameters": [
+          {
+            "name": "données",
+            "description": "données à envoyer",
+            "required": true,
+            "in": "body",
+            "schema" : {
+              "type": "object",
+              "properties": 
+              { 
+                "day" : 
+                {
+                  "example" : "Mon",
+                  "description": "jour de la semaine au format ('Mon', 'Tues', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun')",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                 
+                "product" : 
+                {
+                  "example" : "angbutter",
+                  "description": "Le produit (options: 'tous', ou le nom du produit)",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                
+                "place" :
+                {
+                  "example" : "mag1",
+                  "description": "Le magasin choisi",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                  }
+              }
+            }
+          }          
+        ],
+        "responses": {
+          "200": {
+            "description": "envoi des données réussies"
+          },
+          "400": {
+            "description": "Mauvaise Requête"
+          }
+        }
+      }
+    }      
+  }
+}

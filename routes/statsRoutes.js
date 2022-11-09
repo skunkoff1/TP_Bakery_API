@@ -6,9 +6,11 @@ const router = express.Router();
 const {
     getStats,
     getTotalSales,
+    getTotalSalesByday,
 } = require("../controllers/statsController");
 
 router.post("/stats", getStats);
 router.post("/getTotal", getTotalSales);
+router.post("/getTotalDay", getTotalSalesByday);
 
 module.exports = router;

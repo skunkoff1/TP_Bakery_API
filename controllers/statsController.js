@@ -140,8 +140,15 @@ const getTotalSales = (req,res) => {
     let index = 0;
 
     // Recupération par magasin
-    for(const elmt of data) {
-        if(elmt.place == place) {
+    if(place != "tous") {
+        for(const elmt of data) {
+            if(elmt.place == place) {
+                dataByPlace.push(elmt);
+            }
+        }
+    } 
+    else {
+        for(const elmt of data) {            
             dataByPlace.push(elmt);
         }
     }
@@ -167,8 +174,10 @@ const getTotalSales = (req,res) => {
         return a.date - b.date;
     })
 
-    currentMonth = dataCleaned[0].date.getMonth();
-    currentYear = dataCleaned[0].date.getFullYear();
+    if(dataCleaned[0] != null) {
+        currentMonth = dataCleaned[0].date.getMonth();
+        currentYear = dataCleaned[0].date.getFullYear();
+    }
 
     for(const elmt of dataCleaned) {
         
@@ -205,6 +214,93 @@ const getTotalSales = (req,res) => {
     
 }
 
+const getTotalSalesByday = (req, res) => {
+
+    let data = readFile();
+
+    // Récupération des parametres de la requête
+    let place = req.body.place;
+    let product = req.body.product;
+
+    let dataByPlace = [];
+    let dataCleaned = [];
+    let dayToReturn = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+    let totalToReturn = [];
+    let lundi = 0;
+    let mardi = 0;
+    let mercredi = 0;
+    let jeudi = 0;
+    let vendredi = 0;
+    let samedi = 0;
+    let dimanche =0;
+
+     // Recupération par magasin
+     if(place != "tous") {
+        for(const elmt of data) {
+            if(elmt.place == place) {
+                dataByPlace.push(elmt);
+            }
+        }
+    } 
+    else {
+        for(const elmt of data) {            
+            dataByPlace.push(elmt);
+        }
+    }
+
+    // POUR LES VENTES TOTALES
+    if(product == "tous") {
+        dataCleaned = dataByPlace.map(elmt => ({
+            date: new Date(elmt.datetime),
+            total: elmt.total,
+        }))
+    }
+    else {
+        for(const elmt of dataByPlace) {
+            let amount = 0;
+            if(elmt[product] != "") {
+                amount = parseInt(elmt[product])
+            }
+            dataCleaned.push({"date": new Date(elmt.datetime), "total": amount})
+        }
+    }
+
+    dataCleaned.sort((a,b) => {
+        return a.date - b.date;
+    })
+
+    for(const elmt of dataCleaned) {
+        let d = elmt.date.getDay();
+
+        switch(d) {
+            case 0: 
+                dimanche += parseInt(elmt.total);
+                break;
+            case 1: 
+                lundi += parseInt(elmt.total);
+                break;
+            case 2: 
+                mardi += parseInt(elmt.total);
+                break;
+            case 3: 
+                mercredi += parseInt(elmt.total);
+                break;
+            case 4: 
+                jeudi += parseInt(elmt.total);
+                break;
+            case 5: 
+                vendredi += parseInt(elmt.total);
+                break;
+            case 6: 
+                samedi += parseInt(elmt.total);
+                break;
+        }
+    }
+
+    totalToReturn.push(lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche);
+    return res.status(200).json({"dayArray" : dayToReturn, "totalArray": totalToReturn}) 
+}
+
 // FONCTION QUI PARSE LES DONNEES
 function readFile() {
     let data;
@@ -216,4 +312,4 @@ function readFile() {
     return data;
 }
 
-module.exports = { getStats, getTotalSales };
+module.exports = { getStats, getTotalSales, getTotalSalesByday};
