@@ -179,29 +179,12 @@ async function calculateDayPrediction(data) {
 // FONCTION POUR LA PAGE UTILISANT TENSORFLOW
 const useTensor = (req, res) => {
 
-    let data = readFile();
+    let data = readFile1();
 
-    let dataMag1 = [];
-
-    for(const elmt of data) {
-        if(elmt.place == "mag1") {
-            dataMag1.push(elmt)
-        }
-    }
-
-    let dataCleaned = dataMag1.map(elmt => ({
-        day: new Date(elmt.datetime).getDay(),
-        angbutter: elmt.angbutter,
-    }))
-
-    for(const elmt of dataCleaned) { 
-        if(elmt.angbutter == "") {
-            elmt.angbutter = 0;
-        }
-        else {
-            elmt.angbutter = parseInt(elmt.angbutter)
-        }
-    }      
+    let dataCleaned = data.map(elmt => ({
+        year: elmt.year,
+        price: elmt.price,
+    }))       
     
     return res.status(200).json({"data": dataCleaned})
     
@@ -217,5 +200,17 @@ function readFile() {
     }
     return data;
 }
+
+function readFile1() {
+    let data;
+    try {
+        data = JSON.parse(fs.readFileSync('./focus.json', 'utf8'));
+    } catch (err) {
+        console.error(err);
+    }
+    return data;
+}
+
+
 
 module.exports = { getMonthPrediction, getDayPrediction, useTensor };

@@ -9,9 +9,9 @@ const doc = {
         title: "Documentation de l'API Bakery",
         description: "Une API conçue pour faire des statistiques, et des predictions de ventes pour une chaîne de boulangerie coréenne"
     },
-    host: "https://api.bakery.dd-web.fr",
+    host: "api.bakery.dd-web.fr",
     basePath: "/",
-    schemes: ['http', 'https'],
+    schemes: ['https'],
     consumes: ['application/json'],
     produces: ['application/json'],    
 };

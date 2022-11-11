@@ -5,11 +5,10 @@
     "title": "Documentation de l'API Bakery",
     "description": "Une API conçue pour faire des statistiques, et des predictions de ventes pour une chaîne de boulangerie coréenne"
   },
-  "host": "https://api.bakery.dd-web.fr",
+  "host": "api.bakery.dd-web.fr",
   "basePath": "/",
   "tags": [],
-  "schemes": [
-    "http",
+  "schemes": [    
     "https"
   ],
   "consumes": [
@@ -87,6 +86,52 @@
           "Statistiques de vente"
         ],
         "description": "Permets de faire les statistiques de vente d'un magasin donnée sur la totalité des données pour un produit ou tous",
+        "parameters": [
+          {
+            "name": "données",
+            "description": "données à envoyer",
+            "required": true,
+            "in": "body",
+            "schema" : {
+              "type": "object",
+              "properties": 
+              {               
+                "product" : 
+                {
+                  "example" : "angbutter",
+                  "description": "Le produit (options: 'tous', ou le nom du produit)",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                },                
+                "place" :
+                {
+                  "example" : "mag1",
+                  "description": "Le magasin choisi",
+                  "required": true,
+                  "in": "body",
+                  "type": "string"
+                }
+              }
+            }
+          }          
+        ],
+        "responses": {
+          "200": {
+            "description": "envoi des données réussies"
+          },
+          "400": {
+            "description": "Mauvaise Requête"
+          }
+        }
+      }
+    },
+    "/getTotalDay": {
+      "post": {
+        "tags": [
+          "Statistiques de vente"
+        ],
+        "description": "Permets de faire les statistiques de vente par jour d'un magasin ou tous",
         "parameters": [
           {
             "name": "données",
